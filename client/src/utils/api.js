@@ -8,66 +8,67 @@ function getToken() {
 }
 
 /**
+ * Intenta parsear JSON de una respuesta. Si falla (cuerpo vacío, HTML, etc.),
+ * devuelve un objeto vacío en lugar de lanzar error.
+ */
+async function parseJson(res) {
+  try {
+    return await res.json()
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * Helper genérico para peticiones HTTP.
+ */
+async function request(method, path, body) {
+  const headers = {}
+  // Solo enviar Authorization si existe token (evita "Bearer null")
+  if (getToken()) {
+    headers.Authorization = `Bearer ${getToken()}`
+  }
+  const opts = { method, headers }
+  if (body) {
+    headers['Content-Type'] = 'application/json'
+    opts.body = JSON.stringify(body)
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, opts)
+  const data = await parseJson(res)
+
+  if (!res.ok) {
+    throw new Error(data?.error || `Error ${res.status} en la solicitud`)
+  }
+  return data
+}
+
+/**
  * Helper para peticiones GET.
  */
-async function get(path) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-    },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Error en la solicitud')
-  return data
+function get(path) {
+  return request('GET', path)
 }
 
 /**
  * Helper para peticiones POST.
  */
-async function post(path, body) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getToken()}`,
-    },
-    body: JSON.stringify(body),
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Error en la solicitud')
-  return data
+function post(path, body) {
+  return request('POST', path, body)
 }
 
 /**
  * Helper para peticiones PATCH.
  */
-async function patch(path, body) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getToken()}`,
-    },
-    body: JSON.stringify(body),
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Error en la solicitud')
-  return data
+function patch(path, body) {
+  return request('PATCH', path, body)
 }
 
 /**
  * Helper para peticiones DELETE.
  */
-async function del(path) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-    },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Error en la solicitud')
-  return data
+function del(path) {
+  return request('DELETE', path)
 }
 
 export default { get, post, patch, del }

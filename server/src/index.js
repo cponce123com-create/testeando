@@ -9,10 +9,12 @@ import resultRoutes from './routes/results.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173'
 
-// Middlewares globales
-app.use(cors({ origin: CLIENT_URL, credentials: true }))
+// CORS: permite el frontend en desarrollo y producción
+app.use(cors({
+  origin: process.env.CLIENT_URL || true,
+  credentials: true,
+}))
 app.use(express.json())
 
 // Rutas
@@ -24,6 +26,14 @@ app.use('/api', resultRoutes)  // /api/audits/:id/attempts, /api/audits/:id/metr
 // Health check
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
+// Manejador global de errores — siempre devuelve JSON, nunca HTML ni cuerpo vacío
+app.use((err, _req, res, _next) => {
+  console.error('Error no capturado:', err)
+  res.status(err.status || 500).json({
+    error: err.message || 'Error interno del servidor.',
+  })
 })
 
 app.listen(PORT, () => {
