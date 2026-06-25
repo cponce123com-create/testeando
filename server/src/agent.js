@@ -1,6 +1,7 @@
 import { query } from './db.js'
 import net from 'net'
 import dns from 'dns/promises'
+import { execSync } from 'child_process'
 
 // --- Utilidades inline (evitan importar de agent/utils) ---
 
@@ -242,6 +243,60 @@ async function runApiScan(audit) {
   console.log('    API scan completado: ' + tested + ' peticiones')
 }
 
+// --- Nettacker runner ---
+
+async function runNettacker(audit) {
+  const { target, modules, intensity } = audit.config
+  if (!target) throw new Error('Target requerido para Nettacker')
+  const moduleStr = modules && modules.length > 0 ? modules.join(',') : 'port_scan,subdomain_scan,directory_scan,cve_check'
+  console.log(`    Nettacker target: ${target}, modules: ${moduleStr}`)
+
+  try {
+    const cmd = `nettacker -i ${target} -m ${moduleStr} --output json 2>&1`
+    console.log('    Ejecutando: ' + cmd)
+    const stdout = execSync(cmd, { timeout: 300000, maxBuffer: 10 * 1024 * 1024 })
+    const output = stdout.toString()
+
+    // Intentar parsear JSON de salida
+    let results = []
+    try {
+      const parsed = JSON.parse(output)
+      // Nettacker puede devolver array o un objeto con key "results"
+      if (Array.isArray(parsed)) {
+        results = parsed
+      } else if (parsed.results && Array.isArray(parsed.results)) {
+        results = parsed.results
+      } else {
+        // Si no es array, guardamos el raw como extra
+        results = [{ module: 'raw', host: target, extra: { raw: output.slice(0, 1000) } }]
+      }
+    } catch {
+      // Si no es JSON válido, guardar como texto raw
+      results = [{ module: 'raw', host: target, extra: { raw: output.slice(0, 1000) } }]
+    }
+
+    for (const r of results) {
+      if (await isCancelled(audit.id)) return
+      await query(
+        `INSERT INTO nettacker_results (audit_id, module, host, port, service, vulnerability, severity, extra, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+        [audit.id, r.module || r.scan_type || 'unknown', r.host || r.target || target,
+         r.port || null, r.service || null, r.vulnerability || r.description || null,
+         r.severity || 'medium', JSON.stringify(r.extra || {})]
+      )
+    }
+    console.log('    Nettacker completado: ' + results.length + ' hallazgos')
+  } catch (err) {
+    console.error('    Nettacker error:', err.message)
+    // Guardar el error como resultado
+    await query(
+      `INSERT INTO nettacker_results (audit_id, module, host, vulnerability, severity, extra, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+      [audit.id, 'error', target, 'Error ejecutando Nettacker: ' + err.message, 'high', JSON.stringify({})]
+    )
+  }
+}
+
 // --- Polling loop ---
 
 const POLL_INTERVAL = (parseInt(process.env.POLL_INTERVAL || '3', 10)) * 1000
@@ -253,6 +308,7 @@ const RUNNERS = {
   escaneo_puertos: runPortScan,
   enumeracion: runEnumeration,
   api_scanner: runApiScan,
+  nettacker_scan: runNettacker,
 }
 
 async function processAudit(audit) {

@@ -125,6 +125,13 @@ router.post('/domain/:domainId/full-scan', async (req, res) => {
           methods: ['GET', 'POST'],
         },
       },
+      {
+        type: 'nettacker_scan',
+        config: {
+          target: hostname,
+          modules: ['port_scan', 'subdomain_scan', 'directory_scan', 'cve_check'],
+        },
+      },
     ]
 
     const created = []

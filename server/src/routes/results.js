@@ -149,4 +149,25 @@ router.get('/audits/:id/secret-results', async (req, res) => {
   }
 })
 
+// GET /api/audits/:id/nettacker-results — Resultados de Nettacker
+router.get('/audits/:id/nettacker-results', async (req, res) => {
+  if (!(await verifyAuditAccess(req.params.id, req.userId))) {
+    return res.status(404).json({ error: 'Auditoría no encontrada.' })
+  }
+  try {
+    const result = await query(
+      `SELECT id, module, host, port, service, vulnerability, severity, extra, created_at
+       FROM nettacker_results WHERE audit_id = $1 ORDER BY
+         CASE severity
+           WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4
+           ELSE 5
+         END, module ASC`,
+      [req.params.id]
+    )
+    res.json(result.rows)
+  } catch {
+    res.status(500).json({ error: 'Error al obtener resultados de Nettacker.' })
+  }
+})
+
 export default router

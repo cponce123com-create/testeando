@@ -121,5 +121,20 @@ await query(`
   );
 `)
 
+await query(`
+  CREATE TABLE IF NOT EXISTS nettacker_results (
+    id SERIAL PRIMARY KEY,
+    audit_id INTEGER NOT NULL REFERENCES audits(id) ON DELETE CASCADE,
+    module VARCHAR(100) NOT NULL,
+    host VARCHAR(255),
+    port INTEGER,
+    service VARCHAR(100),
+    vulnerability TEXT,
+    severity VARCHAR(20),
+    extra JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+`)
+
 console.log('✅ Migraciones completadas.')
 process.exit(0)

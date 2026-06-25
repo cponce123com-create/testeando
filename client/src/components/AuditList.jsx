@@ -17,6 +17,7 @@ const TYPE_OPTIONS = [
   { type: 'auditoria_headers', icon: '🛡️', label: 'Aud. headers', color: 'orange' },
   { type: 'api_scanner', icon: '🔌', label: 'API scanner', color: 'rose' },
   { type: 'busqueda_secretos', icon: '🔑', label: 'Secretos', color: 'amber' },
+  { type: 'nettacker_scan', icon: '🧠', label: 'Nettacker', color: 'sky' },
 ]
 
 export default function AuditList() {
@@ -100,6 +101,7 @@ export default function AuditList() {
             orange: 'bg-orange-600 hover:bg-orange-500 shadow-orange-900/20',
             rose: 'bg-rose-600 hover:bg-rose-500 shadow-rose-900/20',
             amber: 'bg-amber-600 hover:bg-amber-500 shadow-amber-900/20',
+            sky: 'bg-sky-600 hover:bg-sky-500 shadow-sky-900/20',
           }
           return (
             <Link
@@ -136,7 +138,10 @@ export default function AuditList() {
             return (
               <div key={audit.id}
                 className="bg-gray-800/40 border border-gray-700 rounded-xl p-4 flex items-center justify-between hover:border-gray-600 transition group">
-                <Link to={`/dominio/${domainId}/auditoria/${audit.id}`}
+                <Link to={audit.type === 'nettacker_scan'
+                    ? `/dominio/${domainId}/auditoria/${audit.id}/nettacker`
+                    : `/dominio/${domainId}/auditoria/${audit.id}`
+                  }
                   className="flex items-center gap-3 min-w-0 flex-1">
                   <span className="text-xl flex-shrink-0">{ti.icon}</span>
                   <div className="min-w-0">

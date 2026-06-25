@@ -14,6 +14,8 @@ import CreateEnumeration from './components/CreateEnumeration'
 import CreateHeadersAudit from './components/CreateHeadersAudit'
 import CreateApiScan from './components/CreateApiScan'
 import CreateSecretsScan from './components/CreateSecretsScan'
+import CreateNettackerScan from './components/CreateNettackerScan'
+import NettackerResults from './components/NettackerResults'
 
 export default function App() {
   return (
@@ -128,6 +130,29 @@ export default function App() {
               <div className="min-h-screen bg-gray-950">
                 <Navbar />
                 <AuditDetail />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dominio/:domainId/auditoria/:auditId/nettacker"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-950">
+                <Navbar />
+                <NettackerResults />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dominio/:domainId/auditoria/nueva/nettacker"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-950">
+                <Navbar />
+                <CreateNettackerScan />
               </div>
             </ProtectedRoute>
           }
