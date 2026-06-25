@@ -291,5 +291,3 @@ export function startAgent() {
   poll()
   setInterval(poll, POLL_INTERVAL)
 }
-l(poll, POLL_INTERVAL)
-}
