@@ -132,7 +132,3 @@ export default function AuditDetail() {
     </main>
   )
 }
-
-    </main>
-  )
-}
