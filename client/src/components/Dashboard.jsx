@@ -130,14 +130,3 @@ export default function Dashboard() {
     </main>
   )
 }
-lg transition opacity-0 group-hover:opacity-100">
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </main>
-  )
-}
