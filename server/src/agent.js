@@ -1,4 +1,6 @@
 import { query } from './db.js'
+import net from 'net'
+import dns from 'dns/promises'
 
 // --- Utilidades inline (evitan importar de agent/utils) ---
 
@@ -188,7 +190,6 @@ async function runPortScan(audit) {
 }
 
 async function runEnumeration(audit) {
-  const dns = await import('dns/promises')
   const { domain, wordlist } = audit.config
   if (!domain || !wordlist?.length) throw new Error('Dominio y wordlist requeridos')
   console.log(`    Dominio: ${domain}, Palabras: ${wordlist.length}`)
@@ -289,4 +290,6 @@ export function startAgent() {
   console.log(`🤖 AutoAudit Agent iniciado (polling cada ${POLL_INTERVAL / 1000}s)`)
   poll()
   setInterval(poll, POLL_INTERVAL)
+}
+l(poll, POLL_INTERVAL)
 }
