@@ -173,9 +173,3 @@ export default function AuditList() {
     </main>
   )
 }
-       })}
-        </div>
-      )}
-    </main>
-  )
-}
