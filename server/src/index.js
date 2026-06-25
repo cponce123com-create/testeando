@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js'
 import domainRoutes from './routes/domains.js'
 import auditRoutes from './routes/audits.js'
 import resultRoutes from './routes/results.js'
+import { startAgent } from './agent.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -58,4 +59,5 @@ app.use((err, _req, res, _next) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 AutoAudit API corriendo en http://localhost:${PORT}`)
+  startAgent()
 })
