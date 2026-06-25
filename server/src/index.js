@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import express from 'express'
-import cors from 'cors'
 
 import authRoutes from './routes/auth.js'
 import domainRoutes from './routes/domains.js'
@@ -10,11 +9,22 @@ import resultRoutes from './routes/results.js'
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// CORS: permite el frontend en desarrollo y producción
-app.use(cors({
-  origin: process.env.CLIENT_URL || true,
-  credentials: true,
-}))
+// CORS manual — maneja preflight (OPTIONS) explícitamente
+app.use((req, res, next) => {
+  const origin = req.headers.origin
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+
+  if (req.method === 'OPTIONS') {
+    console.log('➡️ Preflight OPTIONS desde:', origin)
+    return res.status(200).end()
+  }
+  next()
+})
 app.use(express.json())
 
 // Rutas
