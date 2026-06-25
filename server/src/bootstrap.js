@@ -48,7 +48,7 @@ export async function bootstrapTools() {
     console.log('  ⬇️  Descargando brutus...')
     try {
       const tmp = '/tmp/brutus.tar.gz'
-      await download('https://github.com/praetorian-inc/brutus/releases/latest/download/brutus-linux-amd64.tar.gz', tmp)
+      await download('https://github.com/praetorian-inc/brutus/releases/download/v1.5.1/brutus-linux-amd64.tar.gz', tmp)
       execSync(`tar xzf "${tmp}" -C "${BIN_DIR}" 2>/dev/null`, { timeout: 30000 })
       fs.rmSync(tmp, { force: true })
       if (fs.existsSync(brutusPath)) { fs.chmodSync(brutusPath, 0o755); console.log('  ✅ brutus listo') }
