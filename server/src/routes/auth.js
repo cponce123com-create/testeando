@@ -4,7 +4,13 @@ import jwt from 'jsonwebtoken'
 import { query } from '../db.js'
 
 const router = Router()
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production'
+
+// JWT_SECRET es obligatorio en producción
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET) {
+  console.error('❌ JWT_SECRET no está configurado. Define esta variable de entorno.')
+  process.exit(1)
+}
 
 // POST /api/auth/register — Crear nueva cuenta
 router.post('/register', async (req, res) => {

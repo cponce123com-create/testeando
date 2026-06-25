@@ -47,6 +47,18 @@ export default function AuditList() {
     return () => clearInterval(interval)
   }, [domainId])
 
+  const handleFullScan = async () => {
+    setScanning(true)
+    try {
+      await api.post(`/api/domain/${domainId}/full-scan`, {})
+      await fetchData()
+    } catch {
+      // Silencioso
+    } finally {
+      setScanning(false)
+    }
+  }
+
   const handleCancel = async (auditId) => {
     if (!window.confirm('¿Cancelar esta auditoria?')) return
     try {
@@ -90,6 +102,11 @@ export default function AuditList() {
             </Link>
           )
         })}
+        <span className="w-px bg-gray-700 mx-1 self-stretch" />
+        <button onClick={handleFullScan} disabled={scanning}
+          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-wait text-white text-xs font-medium rounded-lg transition shadow-lg shadow-emerald-900/20 whitespace-nowrap">
+          {scanning ? '⏳ Escaneando…' : '🚀 Full Scan'}
+        </button>
       </div>
 
       {loading ? (

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [url, setUrl] = useState('')
   const [domains, setDomains] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [adding, setAdding] = useState(false)
+  const [scanningDomain, setScanningDomain] = useState(null)
 
   const fetchDomains = async () => {
     try {
@@ -107,12 +109,28 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
+                <button onClick={() => handleFullScan(domain.id)}
+                  disabled={scanningDomain === domain.id}
+                  className="px-3 py-1.5 text-sm bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 rounded-lg transition disabled:opacity-50 disabled:cursor-wait whitespace-nowrap">
+                  {scanningDomain === domain.id ? 'Escaneando…' : '🚀 Full Scan'}
+                </button>
                 <Link to={`/dominio/${domain.id}/auditorias`}
                   className="px-3 py-1.5 text-sm bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-lg transition">
                   Ver auditorías
                 </Link>
                 <button onClick={() => handleDelete(domain.id)}
                   className="px-3 py-1.5 text-sm text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition opacity-0 group-hover:opacity-100">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </main>
+  )
+}
+lg transition opacity-0 group-hover:opacity-100">
                   Eliminar
                 </button>
               </div>

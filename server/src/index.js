@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 
 import authRoutes from './routes/auth.js'
 import domainRoutes from './routes/domains.js'
@@ -8,6 +9,15 @@ import resultRoutes from './routes/results.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
+
+// Rate limiting para endpoints de autenticación (previene fuerza bruta)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 20,                   // máximo 20 intentos por IP
+  message: { error: 'Demasiados intentos. Intenta de nuevo en 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
 
 // CORS manual — maneja preflight (OPTIONS) explícitamente
 app.use((req, res, next) => {
@@ -28,7 +38,7 @@ app.use((req, res, next) => {
 app.use(express.json())
 
 // Rutas
-app.use('/api/auth', authRoutes)
+app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/domains', domainRoutes)
 app.use('/api', auditRoutes)   // /api/domains/:domainId/audits, /api/audits/:id
 app.use('/api', resultRoutes)  // /api/audits/:id/attempts, /api/audits/:id/metrics

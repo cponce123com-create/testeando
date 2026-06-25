@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production'
+const JWT_SECRET = process.env.JWT_SECRET
 
 // Middleware: verifica que el token JWT sea válido
 export function authMiddleware(req, res, next) {

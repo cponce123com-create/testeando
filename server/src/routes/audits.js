@@ -33,6 +33,17 @@ router.get('/domain/:domainId/audits', async (req, res) => {
   }
 })
 
+// Tipos de auditoría soportados
+const AUDIT_TYPES = [
+  'fuerza_bruta',
+  'carga',
+  'escaneo_puertos',
+  'enumeracion',
+  'auditoria_headers',
+  'api_scanner',
+  'busqueda_secretos',
+]
+
 // POST /api/domains/:domainId/audits — Crear auditoría
 router.post('/domain/:domainId/audits', async (req, res) => {
   if (!(await verifyDomainOwnership(req.params.domainId, req.userId))) {
@@ -40,8 +51,8 @@ router.post('/domain/:domainId/audits', async (req, res) => {
   }
 
   const { type, config } = req.body
-  if (!type || !['fuerza_bruta', 'carga'].includes(type)) {
-    return res.status(400).json({ error: 'Tipo inválido (fuerza_bruta o carga).' })
+  if (!type || !AUDIT_TYPES.includes(type)) {
+    return res.status(400).json({ error: `Tipo inválido. Tipos válidos: ${AUDIT_TYPES.join(', ')}` })
   }
   if (!config) {
     return res.status(400).json({ error: 'Config es obligatorio.' })
@@ -56,6 +67,80 @@ router.post('/domain/:domainId/audits', async (req, res) => {
     res.status(201).json(result.rows[0])
   } catch {
     res.status(500).json({ error: 'Error al crear auditoría.' })
+  }
+})
+
+// POST /api/domains/:domainId/full-scan — Crear todas las auditorías de una vez
+router.post('/domain/:domainId/full-scan', async (req, res) => {
+  if (!(await verifyDomainOwnership(req.params.domainId, req.userId))) {
+    return res.status(404).json({ error: 'Dominio no encontrado.' })
+  }
+
+  // Obtener la URL del dominio para armar configs por defecto
+  const domainRes = await query('SELECT url FROM domains WHERE id = $1', [req.params.domainId])
+  if (domainRes.rows.length === 0) {
+    return res.status(404).json({ error: 'Dominio no encontrado.' })
+  }
+  const domainUrl = domainRes.rows[0].url
+
+  try {
+    const parsedUrl = new URL(domainUrl)
+    const hostname = parsedUrl.hostname
+    const baseUrl = domainUrl.replace(/\/+$/, '')
+
+    const audits = [
+      {
+        type: 'auditoria_headers',
+        config: { targetUrl: domainUrl },
+      },
+      {
+        type: 'busqueda_secretos',
+        config: { targetUrl: domainUrl, scanType: 'web', depth: 1 },
+      },
+      {
+        type: 'carga',
+        config: { targetUrl: domainUrl, httpMethod: 'GET', concurrentUsers: 5, duration: 15 },
+      },
+      {
+        type: 'escaneo_puertos',
+        config: {
+          target: hostname,
+          ports: '21,22,25,53,80,110,143,443,993,995,1433,1521,3306,3389,5432,6379,8080,8443,27017',
+          timeout: 1500,
+        },
+      },
+      {
+        type: 'enumeracion',
+        config: {
+          domain: hostname,
+          wordlist: ['www', 'mail', 'admin', 'api', 'blog', 'ftp', 'dev', 'test', 'app', 'cdn',
+                     'web', 'portal', 'backup', 'secure', 'staging', 'vpn', 'docs', 'status', 'support', 'help'],
+        },
+      },
+      {
+        type: 'api_scanner',
+        config: {
+          baseUrl,
+          endpoints: ['api', 'api/v1', 'api/health', 'health', '.env', 'robots.txt', 'sitemap.xml'],
+          methods: ['GET', 'POST'],
+        },
+      },
+    ]
+
+    const created = []
+    for (const audit of audits) {
+      const result = await query(
+        `INSERT INTO audits (domain_id, type, config)
+         VALUES ($1, $2, $3) RETURNING id, type, status, created_at`,
+        [req.params.domainId, audit.type, JSON.stringify(audit.config)]
+      )
+      created.push(result.rows[0])
+    }
+
+    res.status(201).json({ created: created.length, audits: created })
+  } catch (err) {
+    console.error('Error en full-scan:', err.message)
+    res.status(500).json({ error: 'Error al crear auditorías masivas.' })
   }
 })
 
