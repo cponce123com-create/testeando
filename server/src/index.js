@@ -57,7 +57,8 @@ app.use((err, _req, res, _next) => {
   })
 })
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 AutoAudit API corriendo en http://localhost:${PORT}`)
+  await bootstrapTools()
   startAgent()
 })
