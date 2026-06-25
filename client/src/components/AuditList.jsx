@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import api from '../utils/api'
+import ScanSummary from './ScanSummary'
 
 const STATUS_MAP = {
   pendiente: { label: 'Pendiente', color: 'bg-yellow-500/20 text-yellow-300 border-yellow-700' },
