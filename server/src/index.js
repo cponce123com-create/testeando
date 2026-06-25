@@ -7,6 +7,7 @@ import domainRoutes from './routes/domains.js'
 import auditRoutes from './routes/audits.js'
 import resultRoutes from './routes/results.js'
 import { startAgent } from './agent.js'
+import { bootstrapTools } from './bootstrap.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
