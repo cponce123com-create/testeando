@@ -191,4 +191,21 @@ router.get('/audits/:id/titus-results', async (req, res) => {
   }
 })
 
+// GET /api/audits/:id/brutus-results — Resultados de Brutus
+router.get('/audits/:id/brutus-results', async (req, res) => {
+  if (!(await verifyAuditAccess(req.params.id, req.userId))) {
+    return res.status(404).json({ error: 'Auditoría no encontrada.' })
+  }
+  try {
+    const result = await query(
+      `SELECT id, protocol, target, username, password, success, banner, duration_ms, extra, created_at
+       FROM brutus_results WHERE audit_id = $1 ORDER BY created_at DESC`,
+      [req.params.id]
+    )
+    res.json(result.rows)
+  } catch {
+    res.status(500).json({ error: 'Error al obtener resultados de Brutus.' })
+  }
+})
+
 export default router

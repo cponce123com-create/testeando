@@ -16,6 +16,8 @@ import CreateApiScan from './components/CreateApiScan'
 import CreateSecretsScan from './components/CreateSecretsScan'
 import CreateNettackerScan from './components/CreateNettackerScan'
 import NettackerResults from './components/NettackerResults'
+import TitusResults from './components/TitusResults'
+import BrutusResults from './components/BrutusResults'
 
 export default function App() {
   return (
@@ -164,6 +166,17 @@ export default function App() {
               <div className="min-h-screen bg-gray-950">
                 <Navbar />
                 <TitusResults />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dominio/:domainId/auditoria/:auditId/brutus"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-950">
+                <Navbar />
+                <BrutusResults />
               </div>
             </ProtectedRoute>
           }

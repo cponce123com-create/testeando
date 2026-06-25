@@ -137,6 +137,16 @@ router.post('/domain/:domainId/full-scan', async (req, res) => {
         type: 'titus_scan',
         config: { targetUrl: domainUrl },
       },
+      {
+        type: 'brutus_scan',
+        config: {
+          target: hostname,
+          protocol: 'ssh',
+          usernames: ['root', 'admin', 'ubuntu', 'deploy'],
+          passwords: ['admin', 'root', 'password', '123456', 'toor'],
+          mode: 'cautious',
+        },
+      },
     ]
 
     const created = []

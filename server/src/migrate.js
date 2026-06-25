@@ -152,5 +152,21 @@ await query(`
   );
 `)
 
+await query(`
+  CREATE TABLE IF NOT EXISTS brutus_results (
+    id SERIAL PRIMARY KEY,
+    audit_id INTEGER NOT NULL REFERENCES audits(id) ON DELETE CASCADE,
+    protocol VARCHAR(30) NOT NULL,
+    target VARCHAR(255) NOT NULL,
+    username VARCHAR(255),
+    password TEXT,
+    success BOOLEAN DEFAULT FALSE,
+    banner TEXT,
+    duration_ms INTEGER,
+    extra JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+`)
+
 console.log('✅ Migraciones completadas.')
 process.exit(0)

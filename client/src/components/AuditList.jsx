@@ -19,6 +19,7 @@ const TYPE_OPTIONS = [
   { type: 'busqueda_secretos', icon: '🔑', label: 'Secretos', color: 'amber' },
   { type: 'nettacker_scan', icon: '🧠', label: 'Nettacker', color: 'sky' },
   { type: 'titus_scan', icon: '🔑', label: 'Titus Secrets', color: 'pink' },
+  { type: 'brutus_scan', icon: '🔐', label: 'Brutus', color: 'red' },
 ]
 
 export default function AuditList() {
@@ -166,6 +167,12 @@ export default function AuditList() {
               </div>
             )
           })}
+        </div>
+      )}
+    </main>
+  )
+}
+       })}
         </div>
       )}
     </main>

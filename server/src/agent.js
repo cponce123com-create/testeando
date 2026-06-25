@@ -3,6 +3,7 @@ import net from 'net'
 import dns from 'dns/promises'
 import { execSync } from 'child_process'
 import { runTitusScan } from './titus.js'
+import { runBrutusScan } from './brutus.js'
 
 // --- Utilidades inline (evitan importar de agent/utils) ---
 
@@ -310,6 +311,8 @@ const RUNNERS = {
   enumeracion: runEnumeration,
   api_scanner: runApiScan,
   nettacker_scan: runNettacker,
+  titus_scan: runTitusScan,
+  brutus_scan: runBrutusScan,
 }
 
 async function processAudit(audit) {
