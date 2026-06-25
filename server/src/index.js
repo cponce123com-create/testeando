@@ -60,6 +60,23 @@ app.use((err, _req, res, _next) => {
 
 app.listen(PORT, async () => {
   console.log(`🚀 AutoAudit API corriendo en http://localhost:${PORT}`)
+
+  // Ejecutar migraciones de BD
+  try {
+    console.log('🔄 Ejecutando migraciones de BD...')
+    await runMigrations()
+    console.log('✅ Migraciones completadas')
+  } catch (err) {
+    console.error('❌ Error en migraciones:', err.message)
+  }
+
+  // Descargar herramientas externas
   await bootstrapTools()
   startAgent()
 })
+
+async function runMigrations() {
+  await query(`CREATE TABLE IF NOT EXISTS nettacker_results (id SERIAL PRIMARY KEY, audit_id INTEGER NOT NULL REFERENCES audits(id) ON DELETE CASCADE, module VARCHAR(100) NOT NULL, host VARCHAR(255), port INTEGER, service VARCHAR(100), vulnerability TEXT, severity VARCHAR(20), extra JSONB DEFAULT '{}', created_at TIMESTAMPTZ DEFAULT NOW())`)
+  await query(`CREATE TABLE IF NOT EXISTS titus_results (id SERIAL PRIMARY KEY, audit_id INTEGER NOT NULL REFERENCES audits(id) ON DELETE CASCADE, rule_id VARCHAR(200), rule_name VARCHAR(200) NOT NULL, match TEXT, file_path TEXT, line_number INTEGER, severity VARCHAR(20) DEFAULT 'medium', score INTEGER, extra JSONB DEFAULT '{}', created_at TIMESTAMPTZ DEFAULT NOW())`)
+  await query(`CREATE TABLE IF NOT EXISTS brutus_results (id SERIAL PRIMARY KEY, audit_id INTEGER NOT NULL REFERENCES audits(id) ON DELETE CASCADE, protocol VARCHAR(30) NOT NULL, target VARCHAR(255) NOT NULL, username VARCHAR(255), password TEXT, success BOOLEAN DEFAULT FALSE, banner TEXT, duration_ms INTEGER, extra JSONB DEFAULT '{}', created_at TIMESTAMPTZ DEFAULT NOW())`)
+}

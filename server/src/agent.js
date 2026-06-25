@@ -314,6 +314,7 @@ const RUNNERS = {
   nettacker_scan: runNettacker,
   titus_scan: runTitusScan,
   brutus_scan: runBrutusScan,
+  subfinder_scan: runSubfinderScan,
 }
 
 async function processAudit(audit) {
