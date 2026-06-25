@@ -23,6 +23,7 @@ export default function AuditList() {
   const { domainId } = useParams()
   const [audits, setAudits] = useState([])
   const [domainUrl, setDomainUrl] = useState('')
+  const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
   const [fetchError, setFetchError] = useState('')
 
