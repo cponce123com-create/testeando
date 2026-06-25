@@ -71,7 +71,11 @@ app.listen(PORT, async () => {
   }
 
   // Descargar herramientas externas
-  await bootstrapTools()
+  try {
+    await bootstrapTools()
+  } catch (err) {
+    console.error('❌ Error en bootstrap:', err.message)
+  }
   startAgent()
 })
 
