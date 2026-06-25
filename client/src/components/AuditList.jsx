@@ -20,6 +20,7 @@ const TYPE_OPTIONS = [
   { type: 'nettacker_scan', icon: '🧠', label: 'Nettacker', color: 'sky' },
   { type: 'titus_scan', icon: '🔑', label: 'Titus Secrets', color: 'pink' },
   { type: 'brutus_scan', icon: '🔐', label: 'Brutus', color: 'red' },
+  { type: 'subfinder_scan', icon: '🌐', label: 'Subfinder', color: 'teal' },
 ]
 
 export default function AuditList() {

@@ -4,6 +4,7 @@ import dns from 'dns/promises'
 import { execSync } from 'child_process'
 import { runTitusScan } from './titus.js'
 import { runBrutusScan } from './brutus.js'
+import { runSubfinderScan } from './subfinder.js'
 
 // --- Utilidades inline (evitan importar de agent/utils) ---
 

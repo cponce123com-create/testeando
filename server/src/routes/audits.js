@@ -44,6 +44,8 @@ const AUDIT_TYPES = [
   'busqueda_secretos',
   'nettacker_scan',
   'titus_scan',
+  'brutus_scan',
+  'subfinder_scan',
 ]
 // POST /api/domains/:domainId/audits — Crear auditoría
 router.post('/domain/:domainId/audits', async (req, res) => {
@@ -146,6 +148,10 @@ router.post('/domain/:domainId/full-scan', async (req, res) => {
           passwords: ['admin', 'root', 'password', '123456', 'toor'],
           mode: 'cautious',
         },
+      },
+      {
+        type: 'subfinder_scan',
+        config: { domain: hostname },
       },
     ]
 
