@@ -125,10 +125,14 @@ export default function AuditDetail() {
       {audit.type === 'fuerza_bruta' && <BruteForceResults auditId={auditId} />}
       {audit.type === 'carga' && <LoadTestResults auditId={auditId} />}
       {audit.type === 'escaneo_puertos' && <PortScanResults auditId={auditId} />}
-      {audit.type === 'enumeracion' && <EnumResults auditId={auditId} />}
+      {(audit.type === 'enumeracion' || audit.type === 'subfinder_scan') && <EnumResults auditId={auditId} />}
       {audit.type === 'auditoria_headers' && <HeadersResults auditId={auditId} />}
       {audit.type === 'api_scanner' && <ApiScanResults auditId={auditId} />}
       {audit.type === 'busqueda_secretos' && <SecretsResults auditId={auditId} />}
+    </main>
+  )
+}
+
     </main>
   )
 }

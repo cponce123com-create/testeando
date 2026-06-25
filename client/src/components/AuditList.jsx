@@ -94,6 +94,8 @@ export default function AuditList() {
         </div>
       )}
 
+      <ScanSummary domainId={domainId} audits={audits} />
+
       <div className="flex flex-wrap gap-2 mb-8">
         {TYPE_OPTIONS.map((opt) => {
           const colorMap = {
