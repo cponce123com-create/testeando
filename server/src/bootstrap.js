@@ -17,17 +17,27 @@ export async function bootstrapTools() {
     fs.mkdirSync(BIN_DIR, { recursive: true })
   }
 
-  // SUBFINDER - .tar.gz
+  // SUBFINDER - .zip (descargar con python zipfile)
   const subPath = path.join(BIN_DIR, 'subfinder')
   if (!fs.existsSync(subPath)) {
     console.log('  ⬇️  Descargando subfinder...')
     try {
-      const tmp = '/tmp/subfinder.tar.gz'
-      await download('https://github.com/projectdiscovery/subfinder/releases/latest/download/subfinder_linux_amd64.tar.gz', tmp)
-      execSync(`tar xzf "${tmp}" -C "${BIN_DIR}" 2>/dev/null`, { timeout: 30000 })
-      fs.rmSync(tmp, { force: true })
+      const tmp = '/tmp/subfinder.zip'
+      await download('https://github.com/projectdiscovery/subfinder/releases/download/v2.14.0/subfinder_2.14.0_linux_amd64.zip', tmp)
+      execSync(`python3 -c "
+import zipfile, os
+with zipfile.ZipFile('${tmp}') as z:
+    z.extractall('${BIN_DIR}')
+"`, { timeout: 30000 })
+      // Buscar binario extraido
       if (fs.existsSync(subPath)) { fs.chmodSync(subPath, 0o755); console.log('  ✅ subfinder listo') }
-      else { console.log('  ⚠️  subfinder: binario no encontrado') }
+      else {
+        // Buscar en subdirectorios
+        execSync(`find "${BIN_DIR}" -type f -name subfinder -o -name subfinder_linux | head -1 | xargs -I{} cp {} "${subPath}" 2>/dev/null && chmod 755 "${subPath}"`, { timeout: 10000 })
+        if (fs.existsSync(subPath)) { console.log('  ✅ subfinder listo') }
+        else { console.log('  ⚠️  subfinder: binario no encontrado') }
+      }
+      fs.rmSync(tmp, { force: true })
     } catch (e) { console.log('  ⚠️  subfinder: ' + e.message) }
   } else { console.log('  ✅ subfinder ya existe') }
 

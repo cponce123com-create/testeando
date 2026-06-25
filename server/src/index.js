@@ -8,6 +8,7 @@ import auditRoutes from './routes/audits.js'
 import resultRoutes from './routes/results.js'
 import { startAgent } from './agent.js'
 import { bootstrapTools } from './bootstrap.js'
+import { query } from './db.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
