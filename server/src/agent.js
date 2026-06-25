@@ -168,7 +168,7 @@ async function runPortScan(audit) {
   console.log(`    Target: ${target}, Puertos: ${portList.length}`)
   async function scanPort(port) {
     return new Promise((resolve) => {
-      const socket = new (await import('net')).Socket()
+      const socket = new net.Socket()
       socket.setTimeout(connTimeout)
       socket.on('connect', () => { socket.destroy(); resolve({ port, state: 'open', service: SERVICE_MAP[port] || 'desconocido' }) })
       socket.on('error', () => { socket.destroy(); resolve({ port, state: 'closed', service: '' }) })
