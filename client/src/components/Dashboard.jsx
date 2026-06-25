@@ -61,6 +61,18 @@ export default function Dashboard() {
     }
   }
 
+  const handleFullScan = async (domainId) => {
+    setScanningDomain(domainId)
+    try {
+      await api.post(`/api/domain/${domainId}/full-scan`, {})
+      navigate(`/dominio/${domainId}/auditorias`)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setScanningDomain(null)
+    }
+  }
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-white mb-2">Mis Dominios</h1>
