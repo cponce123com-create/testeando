@@ -23,10 +23,12 @@ export default function AuditList() {
   const { domainId } = useParams()
   const [audits, setAudits] = useState([])
   const [domainUrl, setDomainUrl] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [scanning, setScanning] = useState(false)
+  const [fetchError, setFetchError] = useState('')
 
   const fetchData = async () => {
     try {
+      setFetchError('')
       const [domains, auditsData] = await Promise.all([
         api.get('/api/domains'),
         api.get(`/api/domain/${domainId}/audits`),
@@ -34,8 +36,8 @@ export default function AuditList() {
       const domain = domains.find((d) => String(d.id) === String(domainId))
       if (domain) setDomainUrl(domain.url)
       setAudits(auditsData)
-    } catch {
-      // Silencioso
+    } catch (err) {
+      setFetchError(err.message || 'Error al cargar datos')
     } finally {
       setLoading(false)
     }
@@ -80,6 +82,12 @@ export default function AuditList() {
         <span className="text-gray-600">/</span>
         <h1 className="text-xl font-bold text-white truncate">{domainUrl || 'Cargando...'}</h1>
       </div>
+
+      {fetchError && (
+        <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm mb-6">
+          ⚠️ {fetchError}
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2 mb-8">
         {TYPE_OPTIONS.map((opt) => {
