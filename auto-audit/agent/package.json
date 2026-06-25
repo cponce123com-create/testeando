@@ -1,0 +1,13 @@
+{
+  "name": "auto-audit-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node run.js",
+    "dev": "node --watch run.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.1"
+  }
+}
