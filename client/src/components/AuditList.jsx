@@ -18,6 +18,7 @@ const TYPE_OPTIONS = [
   { type: 'api_scanner', icon: '🔌', label: 'API scanner', color: 'rose' },
   { type: 'busqueda_secretos', icon: '🔑', label: 'Secretos', color: 'amber' },
   { type: 'nettacker_scan', icon: '🧠', label: 'Nettacker', color: 'sky' },
+  { type: 'titus_scan', icon: '🔑', label: 'Titus Secrets', color: 'pink' },
 ]
 
 export default function AuditList() {
@@ -140,6 +141,8 @@ export default function AuditList() {
                 className="bg-gray-800/40 border border-gray-700 rounded-xl p-4 flex items-center justify-between hover:border-gray-600 transition group">
                 <Link to={audit.type === 'nettacker_scan'
                     ? `/dominio/${domainId}/auditoria/${audit.id}/nettacker`
+                    : audit.type === 'titus_scan'
+                    ? `/dominio/${domainId}/auditoria/${audit.id}/titus`
                     : `/dominio/${domainId}/auditoria/${audit.id}`
                   }
                   className="flex items-center gap-3 min-w-0 flex-1">

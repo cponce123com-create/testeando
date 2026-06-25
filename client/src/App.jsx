@@ -157,6 +157,17 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dominio/:domainId/auditoria/:auditId/titus"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-950">
+                <Navbar />
+                <TitusResults />
+              </div>
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

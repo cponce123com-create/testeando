@@ -170,4 +170,25 @@ router.get('/audits/:id/nettacker-results', async (req, res) => {
   }
 })
 
+// GET /api/audits/:id/titus-results — Resultados de Titus
+router.get('/audits/:id/titus-results', async (req, res) => {
+  if (!(await verifyAuditAccess(req.params.id, req.userId))) {
+    return res.status(404).json({ error: 'Auditoría no encontrada.' })
+  }
+  try {
+    const result = await query(
+      `SELECT id, rule_id, rule_name, match, file_path, line_number, severity, score, extra, created_at
+       FROM titus_results WHERE audit_id = $1 ORDER BY
+         CASE severity
+           WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4
+           ELSE 5
+         END, score DESC NULLS LAST`,
+      [req.params.id]
+    )
+    res.json(result.rows)
+  } catch {
+    res.status(500).json({ error: 'Error al obtener resultados de Titus.' })
+  }
+})
+
 export default router

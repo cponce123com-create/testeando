@@ -42,8 +42,9 @@ const AUDIT_TYPES = [
   'auditoria_headers',
   'api_scanner',
   'busqueda_secretos',
+  'nettacker_scan',
+  'titus_scan',
 ]
-
 // POST /api/domains/:domainId/audits — Crear auditoría
 router.post('/domain/:domainId/audits', async (req, res) => {
   if (!(await verifyDomainOwnership(req.params.domainId, req.userId))) {
@@ -131,6 +132,10 @@ router.post('/domain/:domainId/full-scan', async (req, res) => {
           target: hostname,
           modules: ['port_scan', 'subdomain_scan', 'directory_scan', 'cve_check'],
         },
+      },
+      {
+        type: 'titus_scan',
+        config: { targetUrl: domainUrl },
       },
     ]
 

@@ -2,6 +2,7 @@ import { query } from './db.js'
 import net from 'net'
 import dns from 'dns/promises'
 import { execSync } from 'child_process'
+import { runTitusScan } from './titus.js'
 
 // --- Utilidades inline (evitan importar de agent/utils) ---
 

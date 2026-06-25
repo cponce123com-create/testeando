@@ -136,5 +136,21 @@ await query(`
   );
 `)
 
+await query(`
+  CREATE TABLE IF NOT EXISTS titus_results (
+    id SERIAL PRIMARY KEY,
+    audit_id INTEGER NOT NULL REFERENCES audits(id) ON DELETE CASCADE,
+    rule_id VARCHAR(200),
+    rule_name VARCHAR(200) NOT NULL,
+    match TEXT,
+    file_path TEXT,
+    line_number INTEGER,
+    severity VARCHAR(20) DEFAULT 'medium',
+    score INTEGER,
+    extra JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+`)
+
 console.log('✅ Migraciones completadas.')
 process.exit(0)
